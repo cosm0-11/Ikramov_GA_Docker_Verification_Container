@@ -1,0 +1,46 @@
+{% extends "web_container/base.html" %} <!-- подключение базового шаблона -->
+
+{% block title %}Подтверждение компрометации | Веб-контейнер{% endblock %} <!-- заголовок страницы -->
+
+{% block content %} <!-- блок контента -->
+<section class="hero-card"> <!-- карточка с классом hero-card (основные белые блоки) -->
+    <h2>Подтверждение операции компрометации</h2>
+    <p>
+        Перед выполнением операции компрометации необходимо подтвердить выбранное действие.
+        Это изменение носит тестовый характер, но затрагивает исходный файл или подпись.
+    </p>
+</section>
+
+<section class="card"> <!-- карточка с классом card -->
+    <div class="section-header"> <!-- заголовок раздела -->
+        <h2>Параметры операции</h2>
+    </div>
+
+    <div class="message-box message-warning"> <!-- блок с предупреждающим сообщением -->
+        <p><strong>Файл:</strong> {{ file_name }}</p>
+        <p><strong>Операция:</strong> {{ action_title }}</p>
+
+        {% if action == "modify_file" %} <!-- если операция - изменение содержимого файла -->
+            <p>Содержимое файла будет изменено для моделирования нарушения целостности.</p>
+        {% elif action == "delete_signature" %} <!-- если операция - удаление подписи -->
+            <p>Файл подписи будет удалён. Проверка подписи станет невозможной.</p>
+        {% elif action == "clear_signature" %} <!-- если операция - очистка подписи -->
+            <p>Содержимое файла подписи будет очищено, структура файла сохранится.</p>
+        {% endif %}
+    </div>
+
+    <form method="post" class="form-inline-block"> <!-- форма с методом POST и классом для внутренних блоков -->
+        {% csrf_token %}
+        <input type="hidden" name="file" value="{{ file_name }}"> <!-- скрытое поле для имени файла -->
+        <input type="hidden" name="action" value="{{ action }}"> <!-- скрытое поле для типа операции -->
+        <input type="hidden" name="confirmed" value="yes"> <!-- скрытое поле для подтверждения операции -->
+
+        <div class="action-row"> <!-- строка с действиями -->
+            <button type="submit" class="btn btn-warning">Подтвердить операцию</button> <!-- кнопка для подтверждения операции -->
+            <a href="{% url 'compromise_file' %}?file={{ file_name }}" class="btn btn-secondary"> <!-- ссылка для отмены операции -->
+                Отмена
+            </a>
+        </div>
+    </form>
+</section>
+{% endblock %}

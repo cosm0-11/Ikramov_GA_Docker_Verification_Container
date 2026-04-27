@@ -1,0 +1,38 @@
+{% load static %} <!-- подключение шаблонного тега static для подстановки путей к CSS -->
+<!DOCTYPE html>
+<html lang="ru"> <!-- задается язык страницы -->
+<head>
+    <meta charset="utf-8"> <!-- задается кодировка страницы -->
+    <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- настройка адаптивного масштабирования страницы -->
+    <title>{% block title %}Веб-контейнер верификации обновлений{% endblock %}</title> <!-- задается заголовок страницы -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"> <!-- подключение CSS-файла -->
+</head>
+<body>
+    <header class="site-header"> <!-- задается шапка сайта -->
+        <div class="container header-inner"> <!-- задается контейнер с классом header-inner -->
+            <div class="branding"> <!-- задается блок с классом branding для объединения текстовой части шапки -->
+                <h1 class="site-title">Веб-контейнер верификации обновлений</h1> <!-- задается заголовок с классом site-title -->
+                <p class="site-subtitle"> <!-- задается абзац с классом site-subtitle -->
+                    Веб-приложение для создания, подписи, проверки и тестовой компрометации файлов
+                </p>
+            </div>
+            <nav class="site-nav"> <!-- задается навигационное меню с классом site-nav -->
+                <a href="{% url 'index' %}" class="nav-link">Главная</a> <!-- задается ссылка на главную страницу -->
+            </nav>
+        </div>
+    </header>
+
+    <main class="page"> <!-- задается основная часть страницы -->
+        <div class="container"> <!-- задается контейнер для основного контента -->
+            {% block content %} <!-- задается блок для вставки контента -->
+            {% endblock %} <!-- закрытие блока для вставки контента -->
+        </div>
+    </main>
+
+    <footer class="site-footer"> <!-- задается футер сайта -->
+        <div class="container"> <!-- задается контейнер для футера -->
+            <p>Контейнер по верификации обновлений</p>
+        </div>
+    </footer>
+</body>
+</html>

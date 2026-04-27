@@ -1,0 +1,34 @@
+{% extends "web_container/base.html" %} <!-- подключение базового шаблона -->
+
+{% block title %}Результат компрометации | Веб-контейнер{% endblock %} <!-- заголовок страницы -->
+
+{% block content %} <!-- блок контента -->
+<section class="hero-card"> <!-- карточка с классом hero-card (основные белые блоки) -->
+    <h2>Результат операции компрометации</h2>
+    <p>
+        Ниже приведён итог выполнения выбранной операции компрометации файла или подписи.
+    </p>
+</section>
+
+<section class="card"> <!-- карточка с классом card -->
+    {% if error %} <!-- если есть ошибка -->
+        <div class="message-box message-error"> <!-- блок с сообщением об ошибке -->
+            {{ error }}
+        </div>
+    {% else %}
+        <div class="section-header"> <!-- заголовок раздела -->
+            <h2>Сведения о результате</h2>
+        </div>
+
+        <div class="message-box message-success"> <!-- блок с сообщением об успешном результате операции -->
+            <p><strong>Файл:</strong> {{ result.file_name }}</p>
+            <p><strong>Статус:</strong> {{ result.status }}</p>
+            <p><strong>Комментарий:</strong> {{ result.details }}</p>
+        </div>
+    {% endif %}
+
+    <div class="action-row"> <!-- строка с действиями -->
+        <a href="{% url 'index' %}" class="btn btn-primary">Вернуться к списку файлов</a> <!-- ссылка для возврата к списку файлов -->
+    </div>
+</section>
+{% endblock %}

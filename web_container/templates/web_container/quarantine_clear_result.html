@@ -1,0 +1,25 @@
+{% extends "web_container/base.html" %} <!-- Подключение базового шаблона для страницы результата -->
+
+{% block title %}Карантин очищен | Веб-контейнер{% endblock %} <!-- Заголовок вкладки для завершённой операции очистки -->
+
+{% block content %}
+<section class="hero-card"> <!-- Краткое описание завершения операции очистки -->
+    <h2>Результат очистки карантинной зоны</h2>
+    <p>
+        Операция очистки карантина завершена. Ниже приведена краткая сводка по удалённым
+        объектам.
+    </p>
+</section>
+
+<section class="card"> <!-- Карточка с количественной сводкой об удалённых объектах -->
+    <div class="message-box message-success"> <!-- Информационный блок успешного завершения операции -->
+        <p><strong>Удалено файлов обновлений:</strong> {{ deleted_files_count }}</p>
+        <p><strong>Удалено файлов подписей:</strong> {{ deleted_signatures_count }}</p>
+    </div>
+
+    <div class="action-row"> <!-- Панель действий после очистки карантина -->
+        <a href="{% url 'quarantine' %}" class="btn btn-primary">Вернуться в карантинную зону</a>
+        <a href="{% url 'index' %}" class="btn btn-secondary">Вернуться к списку файлов</a>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "web_container/base.html" %} <!-- подключение базового шаблона -->
+
+{% block title %}Подтверждение перезаписи подписи | Веб-контейнер{% endblock %} <!-- заголовок страницы -->
+
+{% block content %} <!-- блок контента -->
+<section class="hero-card"> <!-- карточка с классом hero-card (основные белые блоки) -->
+    <h2>Подпись уже существует</h2>
+    <p>
+        Для выбранного файла уже сформирован файл подписи. При подтверждении текущая
+        подпись будет перезаписана новой версией.
+    </p>
+</section>
+
+<section class="card"> <!-- карточка с классом card -->
+    <div class="section-header"> <!-- заголовок раздела -->
+        <h2>Информация о файле и подписи</h2>
+    </div>
+
+    <div class="message-box message-warning"> <!-- блок с предупреждающим сообщением -->
+        <p><strong>Файл:</strong> {{ file_name }}</p>
+        <p><strong>Существующая подпись:</strong> {{ signature_name }}</p>
+        <p>Подтвердите перезапись существующей подписи для данного файла.</p>
+    </div>
+
+    <form method="post" class="form-inline-block"> <!-- форма с методом POST и классом для внутренних блоков -->
+        {% csrf_token %}
+        <input type="hidden" name="file" value="{{ file_name }}"> <!-- скрытое поле для имени файла -->
+        <input type="hidden" name="overwrite" value="yes"> <!-- скрытое поле для подтверждения перезаписи подписи -->
+
+        <div class="action-row"> <!-- строка с действиями -->
+            <button type="submit" class="btn btn-warning">Перезаписать подпись</button> <!-- кнопка для подтверждения перезаписи подписи -->
+            <a href="{% url 'index' %}" class="btn btn-secondary">Отмена и возврат к списку файлов</a> <!-- ссылка для отмены действия и возврата к списку файлов -->
+        </div>
+    </form>
+</section>
+{% endblock %}

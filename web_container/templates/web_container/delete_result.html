@@ -1,0 +1,40 @@
+{% extends "web_container/base.html" %} <!-- подключение базового шаблона -->
+
+{% block title %}Результат удаления файла | Веб-контейнер верификации обновлений{% endblock %} <!-- заголовок страницы -->
+
+{% block content %} <!-- блок контента -->
+<section class="hero-card"> <!-- карточка с классом hero-card (основные белые блоки) -->
+    <h2>Результат удаления файла</h2>
+    <p>
+        Ниже приведён итог операции удаления файла и, при наличии, связанной подписи.
+    </p>
+</section>
+
+<section class="card"> <!-- карточка с классом card -->
+    {% if error %}
+        <div class="message-box message-error"> <!-- блок с сообщением об ошибке -->
+            {{ error }}
+        </div>
+    {% else %}
+        <div class="section-header"> <!-- заголовок раздела -->
+            <h2>Сведения об удалении</h2>
+        </div>
+
+        <div class="message-box message-success"> <!-- блок с сообщением об успешном результате операции -->
+            <p><strong>Файл:</strong> {{ result.file_name }}</p>
+            <p><strong>Статус:</strong> {{ result.status }}</p>
+            <p><strong>Комментарий:</strong> {{ result.details }}</p>
+
+            {% if result.signature_deleted %} <!-- если подпись удалена -->
+                <p><strong>Удалена подпись:</strong> {{ result.signature_name }}</p>
+            {% else %} <!-- иначе -->
+                <p>Связанная подпись отсутствовала и не удалялась.</p>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <div class="action-row"> <!-- строка с действиями -->
+        <a href="{% url 'index' %}" class="btn btn-primary">Вернуться к списку файлов</a> <!-- ссылка для возврата к списку файлов -->
+    </div>
+</section>
+{% endblock %}

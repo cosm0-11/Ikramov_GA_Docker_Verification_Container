@@ -1,0 +1,84 @@
+{% extends "web_container/base.html" %} <!-- подключение базового шаблона -->
+
+{% block title %}Создание файла | Веб-контейнер верификации обновлений{% endblock %} <!-- заголовок страницы -->
+
+{% block content %} <!-- блок контента -->
+<section class="hero-card"> <!-- карточка с классом hero-card (основные белые блоки) -->
+    <h2>Создание нового файла</h2>
+    <p>
+        На этой странице создаётся тестовый файл для последующей подписи и проверки.
+        Можно ввести содержимое вручную или сгенерировать его автоматически.
+    </p>
+</section>
+
+<section class="form-card"> <!-- карточка с классом form-card (для форм) -->
+    {% if error %} <!-- если есть ошибка -->
+        <div class="message-box message-error"> <!-- блок с сообщением об ошибке -->
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <form method="post" class="form-block"> <!-- форма с методом POST и классом для внутренних блоков -->
+        {% csrf_token %}
+
+        <div class="form-row"> <!-- создание одной логической строки -->
+            <label for="filename">Имя файла</label> <!-- метка для поля ввода имени файла -->
+            <input type="text" id="filename" name="filename" value="{{ filename|default:'' }}"> <!-- поле ввода имени файла -->
+        </div>
+
+        <div class="form-row"> <!-- класс для многострочной формы -->
+            <span>Режим создания содержимого</span> <!-- заголовок для выбора режима создания содержимого -->
+            <div class="mode-options"> <!-- класс для выбора режима создания содержимого -->
+                <label class="mode-option"> 
+                    <input type="radio" name="mode" value="manual" {% if mode == "manual" or not mode %}checked{% endif %}> <!-- группа из двух радио-кнопок (кнопка ручного ввода) -->
+                    Ручной ввод
+                </label>
+                <label class="mode-option">
+                    <input type="radio" name="mode" value="random" {% if mode == "random" %}checked{% endif %}> <!-- группа из двух радио-кнопок (кнопка случайной генерации) -->
+                    Случайная генерация
+                </label>
+            </div>
+        </div>
+
+        <div id="content-section" class="form-row"> <!-- класс для многострочной формы ввода (скрываемый) -->
+            <label for="content">Содержимое файла</label>
+            <textarea id="content" name="content" rows="10">{{ content|default:'' }}</textarea>
+        </div>
+
+        <div class="action-row"> <!-- строка с действиями -->
+            <button type="submit" class="btn btn-primary">Создать файл</button> <!-- кнопка для создания файла -->
+            <a href="{% url 'index' %}" class="btn btn-secondary">Вернуться к списку файлов</a> <!-- ссылка для возврата к списку файлов -->
+        </div>
+    </form>
+</section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () { <!-- скрипт для скрытия/отображения поля ввода содержимого файла -->
+        const modeInputs = document.querySelectorAll('input[name="mode"]'); <!-- выбор всех радио-кнопок -->
+        const contentSection = document.getElementById("content-section"); <!-- выбор поля ввода содержимого файла -->
+
+        if (!contentSection || modeInputs.length === 0) {
+            return;
+        }
+
+        function updateVisibility() { <!-- функция для скрытия/отображения поля ввода содержимого файла -->
+            const selected = document.querySelector('input[name="mode"]:checked'); <!-- выбор нажатой радио-кнопки -->
+            if (!selected) {
+                return;
+            }
+
+            if (selected.value === "random") { <!-- если выбрана радио-кнопка случайной генерации -->
+                contentSection.style.display = "none"; <!-- скрытие поля ввода содержимого файла -->
+            } else {
+                contentSection.style.display = ""; <!-- иначе отображение поля ввода содержимого файла -->
+            }
+        }
+
+        modeInputs.forEach(function (input) { <!-- для каждой радио-кнопки -->
+            input.addEventListener("change", updateVisibility); <!-- добавление обработчика события изменения -->
+        });
+
+        updateVisibility(); <!-- вызов функции для скрытия/отображения поля ввода содержимого файла -->
+    });
+</script>
+{% endblock %}

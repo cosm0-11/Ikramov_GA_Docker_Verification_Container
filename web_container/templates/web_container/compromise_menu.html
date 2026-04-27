@@ -1,0 +1,52 @@
+{% extends "web_container/base.html" %} <!-- подключение базового шаблона -->
+
+{% block title %}Компрометация файла | Веб-контейнер{% endblock %} <!-- заголовок страницы -->
+
+{% block content %} <!-- блок контента -->
+<section class="hero-card"> <!-- карточка с классом hero-card (основные белые блоки) -->
+    <h2>Компрометация файла</h2>
+    <p>
+        На этой странице выбирается сценарий намеренной компрометации файла или связанной
+        с ним подписи для последующего анализа поведения системы при проверке.
+    </p>
+</section>
+
+<section class="card"> <!-- карточка с классом card -->
+    <div class="section-header"> <!-- заголовок раздела -->
+        <h2>Информация о файле</h2>
+    </div>
+
+    <div class="message-box message-warning"> <!-- блок с предупреждающим сообщением -->
+        <p><strong>Файл:</strong> {{ file_name }}</p> <!-- вывод имени файла -->
+
+        {% if signature_exists %} <!-- если есть связанная подпись -->
+            <p><strong>Подпись:</strong> {{ signature_name }}</p> <!-- вывод имени подписи -->
+        {% else %} <!-- иначе -->
+            <p>Связанная подпись отсутствует.</p> <!-- вывод сообщения об отсутствии подписи -->
+        {% endif %}
+
+        <p>Выберите вариант компрометации.</p>
+    </div>
+
+    <div class="action-panel"> <!-- панель с действиями -->
+        <a href="{% url 'compromise_file' %}?file={{ file_name }}&action=modify_file"
+           class="btn btn-warning"> <!-- ссылка для изменения содержимого файла -->
+            Изменить содержимое файла
+        </a>
+
+        <a href="{% url 'compromise_file' %}?file={{ file_name }}&action=clear_signature"
+           class="btn btn-secondary"> <!-- ссылка для очистки подписи -->
+            Очистить подпись
+        </a>
+
+        <a href="{% url 'compromise_file' %}?file={{ file_name }}&action=delete_signature"
+           class="btn btn-danger"> <!-- ссылка для удаления подписи -->
+            Удалить подпись
+        </a>
+    </div>
+
+    <div class="action-row"> <!-- строка с действиями -->
+        <a href="{% url 'index' %}" class="btn btn-primary">Вернуться к списку файлов</a> <!-- ссылка для возврата к списку файлов -->
+    </div>
+</section>
+{% endblock %}

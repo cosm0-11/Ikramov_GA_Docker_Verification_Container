@@ -1,0 +1,43 @@
+{% extends "web_container/base.html" %} <!-- подключение базового шаблона -->
+
+{% block title %}Файл отклонён | Веб-контейнер{% endblock %} <!-- заголовок страницы -->
+
+{% block content %} <!-- блок контента -->
+<section class="hero-card"> <!-- создание основной карточки (белый блок) -->
+    <h2>Результат проверки файла</h2>
+    <p>
+        Проверка завершилась отрицательным результатом. Ниже приведены сведения о файле,
+        вычисленные контрольные суммы и предложение о переносе файла в карантинную зону.
+    </p>
+</section>
+
+<section class="card"> <!-- создание карточки класса card -->
+    <div class="section-header"> <!-- создание класса заголовка -->
+        <h2>Сведения о проверке</h2>
+    </div>
+
+    <div class="message-box message-warning"> <!-- создание сообщения о предупреждении класса message-warning -->
+        <p><strong>Файл:</strong> {{ result.file_name }}</p>
+        <p><strong>Статус:</strong> {{ result.status }}</p>
+        <p><strong>Комментарий:</strong> {{ result.details }}</p>
+        <p><strong>SHA-256:</strong> {{ result.sha256 }}</p>
+        <p><strong>SHA-512:</strong> {{ result.sha512 }}</p>
+    </div>
+
+    <div class="message-box message-info"> <!-- вывод информационного блока класса message-info -->
+        Файл не прошёл проверку. При подтверждении он будет перемещён в карантинную зону
+        для изоляции от основного набора данных.
+    </div>
+
+    <form method="post" class="form-inline-block"> <!-- форма с методом POST и классом для внутренних блоков -->
+        {% csrf_token %}
+        <input type="hidden" name="file" value="{{ file_name }}"> <!-- скрытое поле для имени файла -->
+        <input type="hidden" name="move_to_quarantine" value="yes"> <!-- скрытое поле для подтверждения переноса в карантин -->
+
+        <div class="action-row"> <!-- строка с действиями -->
+            <button type="submit" class="btn btn-warning">Поместить в карантин</button> <!-- кнопка для подтверждения операции -->
+            <a href="{% url 'index' %}" class="btn btn-secondary">Вернуться к списку файлов</a> <!-- ссылка для отмены операции -->
+        </div>
+    </form>
+</section>
+{% endblock %}

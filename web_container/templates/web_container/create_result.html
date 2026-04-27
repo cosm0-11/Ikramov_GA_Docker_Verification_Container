@@ -1,0 +1,29 @@
+{% extends "web_container/base.html" %} <!-- подключение базового шаблона -->
+
+{% block title %}Результат создания файла | Веб-контейнер верификации обновлений{% endblock %} <!-- заголовок страницы -->
+
+{% block content %} <!-- блок контента -->
+<section class="hero-card"> <!-- карточка с классом hero-card (основные белые блоки) -->
+    <h2>Результат создания файла</h2>
+    <p>
+        Ниже приведены сведения о созданном файле и результат операции.
+    </p>
+</section>
+
+<section class="card"> <!-- карточка с классом card -->
+    <div class="section-header"> <!-- заголовок раздела -->
+        <h2>Информация о файле</h2>
+    </div>
+
+    <div class="message-box {% if result.status == 'OK' or result.status == 'CREATED' %}message-success{% else %}message-warning{% endif %}"> <!-- блок с сообщением об успешном результате операции -->
+        <p><strong>Файл:</strong> {{ result.file_name }}</p> <!-- вывод имени файла -->
+        <p><strong>Статус:</strong> {{ result.status }}</p> <!-- вывод статуса операции -->
+        <p><strong>Режим:</strong> {{ result.mode }}</p> <!-- вывод режима создания файла -->
+        <p><strong>Комментарий:</strong> {{ result.details }}</p> <!-- вывод комментария к операции -->
+    </div>
+
+    <div class="action-row"> <!-- строка с действиями -->
+        <a href="{% url 'index' %}" class="btn btn-primary">Вернуться к списку файлов</a> <!-- ссылка для возврата к списку файлов -->
+    </div>
+</section>
+{% endblock %}

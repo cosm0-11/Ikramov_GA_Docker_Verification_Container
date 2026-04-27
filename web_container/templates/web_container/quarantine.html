@@ -1,0 +1,60 @@
+{% extends "web_container/base.html" %} <!-- Подключение базового шаблона проекта -->
+
+{% block title %}Карантинная зона | Веб-контейнер{% endblock %} <!-- Заголовок вкладки для страницы карантина -->
+
+{% block content %}
+<section class="hero-card"> <!-- Описание назначения карантинной зоны -->
+    <h2>Карантинная зона</h2>
+    <p>
+        В карантинной зоне изолируются файлы обновлений и подписи, не прошедшие проверку.
+        Отсюда их можно анализировать или полностью удалить.
+    </p>
+</section>
+
+<section class="card"> <!-- Карточка со списком файлов обновлений в карантине -->
+    <div class="section-header"> <!-- Заголовок раздела по файлам обновлений -->
+        <h2>Файлы обновлений</h2>
+    </div>
+
+    {% if quarantine_files %}
+        <div class="message-box message-info"> <!-- Список файлов обновлений при непустом карантине -->
+            <p>В карантинной зоне находятся следующие файлы обновлений:</p>
+            <ul>
+                {% for file in quarantine_files %} <!-- Перечисление имен файлов обновлений -->
+                    <li>{{ file.name }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% else %}
+        <div class="message-box message-info"> <!-- Сообщение об отсутствии файлов обновлений -->
+            В карантине нет файлов обновлений.
+        </div>
+    {% endif %}
+</section>
+
+<section class="card"> <!-- Карточка со списком файлов подписей в карантине -->
+    <div class="section-header"> <!-- Заголовок раздела по файлам подписей -->
+        <h2>Файлы подписей</h2>
+    </div>
+
+    {% if quarantine_signatures %}
+        <div class="message-box message-info"> <!-- Список файлов подписей при непустом карантине -->
+            <p>В карантинной зоне находятся следующие файлы подписей:</p>
+            <ul>
+                {% for file in quarantine_signatures %} <!-- Перечисление имен файлов подписей -->
+                    <li>{{ file.name }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% else %}
+        <div class="message-box message-info"> <!-- Сообщение об отсутствии файлов подписей -->
+            В карантине нет файлов подписей.
+        </div>
+    {% endif %}
+
+    <div class="action-row"> <!-- Панель действий для управления карантином -->
+        <a href="{% url 'clear_quarantine' %}" class="btn btn-warning">Очистить карантинную зону</a>
+        <a href="{% url 'index' %}" class="btn btn-secondary">Вернуться к списку файлов</a>
+    </div>
+</section>
+{% endblock %}

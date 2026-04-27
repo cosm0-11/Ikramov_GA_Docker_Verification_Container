@@ -17,3 +17,17 @@ deploymentTarget = "gce"
 [[ports]]
 localPort = 3000
 externalPort = 80
+
+[agent]
+expertMode = true
+
+[workflows]
+
+[[workflows.workflow]]
+name = "Generate Key Pair"
+mode = "sequential"
+author = 34665733
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python generate_keys.py"

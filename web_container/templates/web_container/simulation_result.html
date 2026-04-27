@@ -1,0 +1,111 @@
+{% extends "web_container/base.html" %} <!-- подключение базового шаблона -->
+
+{% block title %}Результаты симуляции | Веб-контейнер верификации обновлений{% endblock %} <!-- заголовок страницы -->
+
+{% block content %} <!-- блок контента -->
+<section class="hero-card"> <!-- карточка с классом hero-card (основные белые блоки) -->
+    <h2>Результаты симуляции</h2>
+    <p>
+        На странице представлены результаты обработки файлов, агрегированная статистика,
+        сохранённый JSON-лог и сформированные диаграммы по итогам симуляции.
+    </p>
+</section>
+
+<section class="card"> <!-- карточка с классом card -->
+    <div class="section-header"> <!-- заголовок раздела -->
+        <h2>Таблица результатов</h2>
+    </div>
+
+    <div class="table-wrapper"> <!-- создание границ для таблицы -->
+        <table class="results-table"> <!-- таблица с результатами -->
+            <thead> <!-- заголовок таблицы -->
+                <tr>
+                    <th>Файл</th> <!-- столбцы -->
+                    <th>Статус</th>
+                    <th>Компрометация</th>
+                    <th>Нет подписи</th>
+                    <th>Комментарий</th>
+                </tr>
+            </thead>
+            <tbody> <!-- тело таблицы -->
+                {% for item in results %} <!-- цикл для вывода результатов -->
+                    <tr>
+                        <td class="file-name">{{ item.filename }}</td> <!-- ячейки таблицы -->
+                        <td>
+                            {% if item.status == "ACCEPTED" %} <!-- условие для вывода статуса -->
+                                <span class="status-badge status-ok">{{ item.status }}</span> <!-- значок статуса -->
+                            {% else %} 
+                                <span class="status-badge status-bad">{{ item.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ item.compromised }}</td> <!-- ячейки таблицы -->
+                        <td>{{ item.missing_signature }}</td>
+                        <td>{{ item.details }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="card">
+    <div class="section-header"> <!-- заголовок раздела -->
+        <h2>Агрегированная статистика</h2>
+    </div>
+
+    <div class="summary-grid"> <!-- сетка с сводкой -->
+        <div class="summary-item"> <!-- элемент сводки -->
+            <span class="summary-label">Принято</span> <!-- метка элемента сводки -->
+            <span class="summary-value">{{ summary.accepted_count }}</span> <!-- значение элемента сводки -->
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">Отклонено</span>
+            <span class="summary-value">{{ summary.rejected_count }}</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">Скомпрометировано</span>
+            <span class="summary-value">{{ summary.compromised_count }}</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">Без подписи</span>
+            <span class="summary-value">{{ summary.missing_signature_count }}</span>
+        </div>
+    </div>
+</section>
+
+<section class="card">
+    <div class="section-header"> 
+        <h2>Сохранённые результаты</h2>
+    </div>
+    <p>JSON-лог сохранён в каталоге результатов симуляции: {{ result_file_name }}</p>
+</section>
+
+<section class="card">
+    <div class="section-header">
+        <h2>Диаграммы</h2>
+    </div>
+
+    <div class="charts-grid"> <!-- сетка с графиками -->
+        <div class="chart-box"> <!-- блок с графиком -->
+            <h3>Столбчатая диаграмма</h3>
+            <img src="{{ bar_chart_url }}" alt="Столбчатая диаграмма" class="chart-image"> <!-- изображение графика -->
+        </div>
+
+        <div class="chart-box">
+            <h3>Круговая диаграмма</h3>
+            <img src="{{ pie_chart_url }}" alt="Круговая диаграмма" class="chart-image">
+        </div>
+    </div>
+</section>
+
+<section class="card">
+    <div class="section-header">
+        <h2>Действия</h2>
+    </div>
+
+    <div class="action-row"> <!-- строка с действиями -->
+        <a href="{% url 'clear_simulation' %}" class="btn btn-danger">Удалить временные файлы симуляции</a> <!-- кнопка для удаления временных файлов симуляции -->
+        <a href="{% url 'index' %}" class="btn btn-secondary">Вернуться на главную</a> <!-- кнопка для возврата на главную страницу -->
+    </div>
+</section>
+{% endblock %}

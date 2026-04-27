@@ -1,0 +1,40 @@
+{% extends "web_container/base.html" %} <!-- Наследование общей разметки и стилей веб-интерфейса -->
+
+{% block title %}Результат перемещения в карантин | Веб-контейнер{% endblock %} <!-- Специализированный заголовок вкладки для результата перемещения -->
+
+{% block content %}
+<section class="hero-card"> <!-- Вводный блок с кратким описанием операции -->
+    <h2>Результат перемещения в карантин</h2>
+    <p>
+        Ниже приведены сведения о перемещённом в карантин файле и, при наличии,
+        связанной с ним подписи.
+    </p>
+</section>
+
+<section class="card"> <!-- Основная карточка с деталями результата -->
+    {% if error %}
+        <div class="message-box message-error"> <!-- Вывод ошибки при неуспешном выполнении операции -->
+            {{ error }}
+        </div>
+    {% else %}
+        <div class="section-header"> <!-- Заголовок блока с информацией о перемещении -->
+            <h2>Сведения о перемещении</h2>
+        </div>
+
+        <div class="message-box message-success"> <!-- Информационный блок при успешном перемещении -->
+            <p><strong>Файл перемещён:</strong> {{ quarantine_result.file_name }}</p>
+
+            {% if quarantine_result.moved_signature %}
+                <p><strong>Подпись перемещена:</strong> {{ quarantine_result.signature_name }}</p>
+            {% else %}
+                <p>Связанная подпись отсутствовала и не перемещалась.</p>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <div class="action-row"> <!-- Панель действий после выполнения операции -->
+        <a href="{% url 'quarantine' %}" class="btn btn-primary">Открыть карантинную зону</a>
+        <a href="{% url 'index' %}" class="btn btn-secondary">Вернуться к списку файлов</a>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,511 @@
+/* === Глобальные CSS‑переменные (цвета, тени, радиусы) === */
+
+:root { /* задаются глобальные переменные для оформления интерфейса */
+  --bg-color: #f3f6fb; /* задается цвет фона страницы */
+  --surface-color: #ffffff; /* задается цвет основных поверхностей (карточки, блоки) */
+  --surface-soft: #edf2f9; /* задается более мягкий цвет поверхностей (вложенные блоки) */
+  --border-color: #d5deea; /* задается цвет границ и разделителей */
+
+  --text-color: #182334; /* задается основной цвет текста */
+  --text-soft: #5d6d85; /* задается более мягкий цвет текста для второстепенных описаний */
+
+  --primary-color: #17365d; /* задается основной акцентный цвет (кнопки, заголовки) */
+  --primary-hover: #112846; /* задается цвет при наведении на элементы с основным цветом */
+
+  --secondary-color: #60728e; /* задается второстепенный цвет (вторичные кнопки, ссылки) */
+  --secondary-hover: #4d5d76; /* задается цвет при наведении на элементы со второстепенным цветом */
+
+  --warning-color: #8b5b19; /* задается цвет предупреждения (потенциально рискованные действия) */
+  --warning-hover: #704710; /* задается цвет при наведении на элементы предупреждения */
+
+  --danger-color: #8d2d3b; /* задается цвет опасности (удаление, критичные ошибки) */
+  --danger-hover: #71212d; /* задается цвет при наведении на элементы опасности */
+
+  --shadow: 0 10px 24px rgba(20, 33, 56, 0.08); /* задается тень для карточек и основных блоков */
+  --radius: 14px; /* задается радиус скругления углов для карточек и крупных блоков */
+  --radius-small: 10px; /* задается радиус скругления углов для вложенных элементов */
+
+  --success-bg: #e7f4ed; /* задается цвет фона для успешных сообщений и значков статуса */
+  --success-text: #1f6b52; /* задается цвет текста для успешных состояний */
+
+  --danger-bg: #f8e8eb; /* задается цвет фона для сообщений об ошибках и плохих статусов */
+  --warning-bg: #f9f1e2; /* задается цвет фона для предупреждающих сообщений */
+}
+
+
+/* === Базовые настройки документа === */
+
+* { /* правило для всех элементов */
+  box-sizing: border-box; /* задается модель размера блока с учетом границ и внутренних отступов */
+}
+
+html { /* базовый размер шрифта для всей страницы */
+  font-size: 16px;
+}
+
+body { /* настройки для всего документа */
+  margin: 0; /* обнуляются внешние отступы страницы */
+  font-family: "Century Gothic", serif; /* задается основной шрифт документа */
+  background-color: var(--bg-color); /* задается цвет фона страницы */
+  color: var(--text-color); /* задается основной цвет текста */
+  line-height: 1.6; /* задается базовый межстрочный интервал */
+}
+
+a { /* общие настройки для ссылок */
+  text-decoration: none; /* убирается стандартное подчеркивание у ссылок */
+  transition: 0.2s ease; /* задается плавное изменение визуальных свойств при наведении */
+}
+
+img { /* настройки для изображений */
+  max-width: 100%; /* ограничение ширины изображения размером родительского блока */
+  display: block; /* перевод изображений в блочный режим для предсказуемых отступов */
+}
+
+
+/* === Макет страницы и контейнеры === */
+
+.container { /* основной ограничивающий контейнер по ширине */
+  width: min(1180px, calc(100% - 40px)); /* ширина не больше 1180px и с отступами от краёв экрана */
+  margin: 0 auto; /* выравнивание контейнера по центру */
+}
+
+.page { /* основная область содержимого страницы */
+  padding: 36px 0 48px; /* вертикальные отступы сверху и снизу */
+}
+
+
+/* === Верхняя панель (шапка сайта) === */
+
+.site-header { /* задается стиль для шапки сайта */
+  background: linear-gradient(135deg, #10233f 0%, #17365d 100%); /* градиентный фон для шапки */
+  color: #ffffff; /* цвет текста в шапке */
+  padding: 28px 0; /* внутренние отступы шапки по вертикали */
+  box-shadow: 0 6px 18px rgba(10, 20, 38, 0.18); /* тень под шапкой */
+}
+
+.header-inner { /* внутренний контейнер шапки (заголовок + навигация) */
+  display: flex; /* выстраивание дочерних элементов в строку */
+  align-items: center; /* вертикальное выравнивание элементов по центру */
+  justify-content: space-between; /* распределение элементов по краям */
+  gap: 24px; /* расстояние между блоками внутри шапки */
+}
+
+.site-title { /* стиль заголовка сайта в шапке */
+  margin: 0 0 6px 0; /* внешние отступы заголовка */
+  font-size: 2rem; /* размер шрифта заголовка */
+  font-weight: normal; /* нормальное начертание без жирности */
+}
+
+.site-subtitle { /* стиль подзаголовка сайта */
+  margin: 0;
+  color: rgba(255, 255, 255, 0.88); /* немного смягченный белый цвет текста */
+  max-width: 760px; /* ограничение ширины для лучшей читаемости */
+}
+
+.site-nav { /* контейнер навигационного меню в шапке */
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap; /* перенос элементов меню на новую строку при нехватке места */
+}
+
+.nav-link { /* стиль для ссылок навигации */
+  color: #ffffff;
+  padding: 10px 16px;
+  border-radius: 999px; /* полностью скругленные края для "пилюль" */
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-link:hover { /* стиль ссылок навигации при наведении */
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+
+/* === Карточки и заголовки разделов === */
+
+.hero-card, /* карточка с вводной информацией на странице */
+.card { /* стандартная карточка содержимого */
+  background: var(--surface-color); /* белый фон карточки */
+  border: 1px solid var(--border-color); /* светлая рамка по периметру */
+  border-radius: var(--radius); /* скругление углов карточки */
+  box-shadow: var(--shadow); /* единая тень для карточек */
+  padding: 28px; /* внутренние отступы содержимого карточки */
+  margin-bottom: 24px; /* отступ между карточками по вертикали */
+}
+
+.hero-card h2, /* заголовки второго уровня внутри hero-card */
+.card h2, /* заголовки второго уровня внутри card */
+.card h3 { /* заголовки третьего уровня внутри card */
+  margin-top: 0; /* убирается верхний отступ заголовка */
+  color: var(--primary-color); /* используется основной акцентный цвет */
+}
+
+.hero-card p, /* абзацы внутри hero-card */
+.card p { /* абзацы внутри card */
+  margin-bottom: 0; /* убирается нижний отступ для контроля расстояний через контейнер */
+  color: var(--text-soft); /* используется мягкий текстовый цвет для описаний */
+}
+
+.section-header { /* заголовок раздела с кнопкой действия справа */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+  flex-wrap: wrap; /* перенос заголовка и кнопки на новые строки при узком экране */
+}
+
+
+/* === Кнопки и панели действий === */
+
+.btn { /* базовая стилизация всех кнопок и ссылок-кнопок */
+  display: inline-flex; /* позволяет центрировать текст и иконки внутри кнопки */
+  align-items: center; /* вертикальное выравнивание содержимого кнопки */
+  justify-content: center; /* горизонтальное выравнивание содержимого кнопки */
+  padding: 12px 18px; /* внутренние отступы кнопки */
+  border-radius: 10px; /* скругление углов кнопки */
+  color: #ffffff; /* цвет текста кнопки */
+  font-size: 1rem; /* базовый размер шрифта кнопки */
+  text-align: center; /* выравнивание текста по центру */
+  border: none; /* отсутствие стандартной границы */
+  cursor: pointer; /* указатель мыши в виде руки при наведении */
+  font-family: inherit; /* использование шрифта страницы */
+}
+
+.btn-small { /* стиль для уменьшенных кнопок (в таблицах и списках) */
+  padding: 8px 12px;
+  font-size: 0.95rem;
+}
+
+.btn-primary { /* стиль для основного типа кнопки */
+  background: var(--primary-color);
+}
+
+.btn-primary:hover { /* стиль для основной кнопки при наведении */
+  background: var(--primary-hover);
+  color: #ffffff;
+}
+
+.btn-secondary { /* стиль для второстепенной кнопки */
+  background: var(--secondary-color);
+}
+
+.btn-secondary:hover { /* стиль для второстепенной кнопки при наведении */
+  background: var(--secondary-hover);
+  color: #ffffff;
+}
+
+.btn-warning { /* стиль для кнопки предупреждения (потенциально рискованные действия) */
+  background: var(--warning-color);
+}
+
+.btn-warning:hover { /* стиль для кнопки предупреждения при наведении */
+  background: var(--warning-hover);
+  color: #ffffff;
+}
+
+.btn-danger { /* стиль для кнопки опасности (удаление, критичные действия) */
+  background: var(--danger-color);
+}
+
+.btn-danger:hover { /* стиль для кнопки опасности при наведении */
+  background: var(--danger-hover);
+  color: #ffffff;
+}
+
+.action-links { /* панель с компактными кнопками действий для строки таблицы */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px; /* расстояние между маленькими кнопками */
+}
+
+.card .action-panel { /* панель с несколькими основными действиями внутри карточки */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 18px; /* отступ от содержимого карточки до панели */
+  margin-bottom: 12px; /* отступ панели от следующих элементов карточки */
+}
+
+.card .action-row { /* горизонтальный ряд действий в нижней части карточки */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 12px; /* отступ сверху перед блоком действий */
+}
+
+.form-card .action-row .btn { /* настройка ширины и центрирования кнопок внутри action-row в формах */
+  min-width: 230px; /* минимальная ширина кнопок для выравнивания по размеру */
+  justify-content: center; /* выравнивание текста по центру внутри кнопки */
+}
+
+
+/* === Таблицы и пустые состояния === */
+
+.table-wrapper { /* контейнер для таблицы с горизонтальной прокруткой при нехватке места */
+  overflow-x: auto;
+}
+
+.results-table { /* таблица со списком файлов и результатами */
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 760px; /* минимальная ширина для сохранения структуры колонок */
+}
+
+.results-table thead th { /* заголовки столбцов таблицы */
+  background: #e8eef8;
+  color: var(--primary-color);
+}
+
+.results-table th,
+.results-table td { /* общие настройки ячеек таблицы */
+  padding: 14px 16px;
+  border: 1px solid var(--border-color);
+  text-align: left;
+  vertical-align: top;
+}
+
+.results-table tbody tr:nth-child(even) { /* окрашивание чётных строк таблицы */
+  background: #f8fbff;
+}
+
+.results-table tbody tr:hover { /* подсветка строки при наведении */
+  background: #edf4fc;
+}
+
+.file-name { /* ячейка с именем файла */
+  color: var(--text-color);
+  font-weight: normal;
+}
+
+.empty-box { /* блок для отображения пустого состояния (нет данных) */
+  padding: 18px 20px;
+  background: var(--surface-soft);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-small);
+}
+
+
+/* === Нижний колонтитул (футер) === */
+
+.site-footer { /* настройки для футера страницы */
+  padding: 24px 0 32px;
+  text-align: center;
+  color: var(--text-soft);
+}
+
+
+/* === Формы и элементы ввода === */
+
+.form-card { /* карточка, внутри которой размещается форма */
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 28px;
+  margin-bottom: 24px;
+}
+
+.form-card form { /* сетка для элементов формы внутри карточки */
+  display: grid;
+  gap: 18px;
+}
+
+.form-card label { /* метки полей ввода в формах */
+  display: block;
+  margin-bottom: 8px;
+  color: var(--primary-color);
+}
+
+.form-card input[type="text"],
+.form-card input[type="file"],
+.form-card select,
+.form-card textarea { /* стили для текстовых полей, файловых полей и списков */
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 1rem;
+  background: #ffffff;
+  color: var(--text-color);
+}
+
+.form-card input:focus,
+.form-card select:focus,
+.form-card textarea:focus { /* стили для полей формы при фокусе */
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(23, 54, 93, 0.14); /* мягкая подсветка вокруг поля */
+}
+
+.hidden { /* класс для полного скрытия элементов */
+  display: none;
+}
+
+.form-block { /* контейнер для логической группы полей формы */
+  display: grid;
+  gap: 18px;
+}
+
+.form-row { /* строка внутри формы (метка + поле) */
+  display: grid;
+  gap: 8px;
+}
+
+.mode-options { /* контейнер для переключателей режима (радиокнопки) */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.mode-option { /* отдельный вариант выбора режима */
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-soft);
+}
+
+
+/* === Сообщения о состоянии и уведомления === */
+
+.message-box { /* общий стиль для блоков с сообщениями */
+  padding: 16px 18px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border-color);
+}
+
+.message-info { /* информационные сообщения (нейтральное состояние) */
+  background: var(--surface-soft);
+  color: var(--primary-color);
+}
+
+.message-success { /* сообщения об успешном выполнении операций */
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.message-error { /* сообщения об ошибках и неуспешных операциях */
+  background: var(--danger-bg);
+  color: var(--danger-color);
+}
+
+.message-warning { /* предупреждающие сообщения (потенциально рискованные действия) */
+  background: var(--warning-bg);
+  color: var(--warning-color);
+}
+
+
+/* === Графики и сводная статистика симуляции === */
+
+.charts-grid { /* сетка для размещения нескольких графиков на странице */
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.chart-box { /* контейнер для отдельного графика */
+  background: var(--surface-soft);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-small);
+  padding: 18px;
+}
+
+.chart-image { /* оформление изображения с графиком */
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 10px;
+}
+
+.summary-grid { /* сетка для сводных числовых показателей симуляции */
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.summary-item { /* блок для одного показателя сводки */
+  background: var(--surface-soft);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-small);
+  padding: 18px;
+}
+
+.summary-label { /* подпись к значению показателя */
+  display: block;
+  color: var(--text-soft);
+  margin-bottom: 8px;
+}
+
+.summary-value { /* числовое значение показателя */
+  font-size: 1.7rem;
+  color: var(--primary-color);
+}
+
+
+/* === Значки статуса (ОК / Плохо) === */
+
+.status-badge { /* базовый стиль для значка статуса */
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.92rem;
+  line-height: 1.2;
+}
+
+.status-ok { /* значок статуса "ОК" */
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.status-bad { /* значок статуса "Плохо" */
+  background: var(--danger-bg);
+  color: var(--danger-color);
+}
+
+
+/* === Адаптивные настройки (медиа‑запросы) === */
+
+@media (max-width: 900px) { /* настройки для экранов с шириной до 900px (планшеты и узкие окна) */
+  .header-inner,
+  .section-header {
+    flex-direction: column; /* перевод блоков в вертикальную компоновку */
+    align-items: flex-start; /* выравнивание элементов по левому краю */
+  }
+
+  .charts-grid,
+  .summary-grid {
+    grid-template-columns: 1fr; /* отображение графиков и сводки в один столбец */
+  }
+}
+
+@media (max-width: 640px) { /* настройки для экранов с шириной до 640px (мобильный режим) */
+  .container {
+    width: min(100% - 24px, 100%); /* уменьшение боковых полей контейнера на телефонах */
+  }
+
+  .hero-card,
+  .card,
+  .form-card {
+    padding: 20px; /* уменьшение внутренних отступов карточек на маленьких экранах */
+  }
+
+  .site-title {
+    font-size: 1.6rem; /* уменьшение размера заголовка сайта в шапке */
+  }
+
+  .btn,
+  .btn-small {
+    width: 100%; /* кнопки занимают всю ширину строки на мобильных устройствах */
+  }
+
+  .action-links,
+  .action-panel,
+  .action-row {
+    flex-direction: column; /* выстраивание кнопок действий в столбик на узких экранах */
+  }
+}

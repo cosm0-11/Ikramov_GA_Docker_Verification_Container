@@ -1,0 +1,62 @@
+{% extends "web_container/base.html" %}  <!-- подключение базового шаблона -->
+
+{% block title %}Запуск симуляции | Веб-контейнер верификации обновлений{% endblock %} <!-- заголовок страницы -->
+
+{% block content %} <!-- блок контента -->
+<section class="hero-card"> <!-- карточка с классом hero-card (основные белые блоки) -->
+    <h2>Симуляция верификации обновлений</h2>
+    <p>
+        Перед запуском отображаются основные параметры сценария. После подтверждения
+        система создаст тестовые обновления, подпишет их, нарушит часть из них,
+        выполнит проверку, сохранит JSON-лог и сформирует две диаграммы результатов.
+    </p>
+</section>
+
+<section class="card">  <!-- карточка с классом card -->
+    <div class="section-header">  <!-- заголовок раздела -->
+        <h2>Параметры запуска</h2>
+    </div>
+
+    <div class="summary-grid"> <!-- сетка с сводкой -->
+        <div class="summary-item"> <!-- элемент сводки -->
+            <span class="summary-label">Будет создано файлов</span> <!-- метка элемента сводки -->
+            <span class="summary-value">{{ file_count }}</span> <!-- значение элемента сводки -->
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">Будет скомпрометировано</span>
+            <span class="summary-value">{{ compromised_count }}</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">Будет без подписи</span>
+            <span class="summary-value">{{ missing_signature_count }}</span>
+        </div>
+    </div>
+</section>
+
+{% if error %} <!-- если есть ошибка -->
+<section class="card"> 
+    <div class="message-box message-error"> <!-- блок с сообщением об ошибке -->
+        {{ error }}
+    </div>
+</section>
+{% endif %} <!-- закрытие условия -->
+
+<section class="card">
+    <div class="section-header"> <!-- заголовок раздела -->
+        <h2>Подтверждение запуска</h2>
+    </div>
+    
+    <div class="message-box message-info"> <!-- блок с информационным сообщением -->
+        После нажатия кнопки будет выполнен полный цикл симуляции с созданием файлов,
+        их обработкой, проверкой и сохранением результатов в каталог симуляции.
+    </div>
+    
+    <form method="post" class="form-inline-block"> <!-- форма с методом POST и классом для внутренних блоков -->
+        {% csrf_token %} 
+        <div class="action-row"> <!-- строка с действиями -->
+            <button type="submit" class="btn btn-primary">Подтвердить запуск симуляции</button> <!-- кнопка для подтверждения запуска симуляции -->
+            <a href="{% url 'index' %}" class="btn btn-secondary">Вернуться на главную</a> <!-- ссылка для возврата на главную страницу -->
+        </div>
+    </form>
+</section>
+{% endblock %}

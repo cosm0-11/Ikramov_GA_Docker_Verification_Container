@@ -1,0 +1,70 @@
+{% extends "web_container/base.html" %} <!-- Использование общего каркаса интерфейса -->
+
+{% block title %}Подтверждение очистки карантина | Веб-контейнер{% endblock %} <!-- Заголовок вкладки для подтверждения очистки -->
+
+{% block content %}
+<section class="hero-card"> <!-- Вводное описание операции очистки карантина -->
+    <h2>Очистка карантинной зоны</h2>
+    <p>
+        Перед удалением всех объектов из карантинной зоны требуется подтверждение.
+        Ниже приведён текущий состав карантина.
+    </p>
+</section>
+
+<section class="card"> <!-- Карточка с перечнем файлов обновлений перед очисткой -->
+    <div class="section-header"> <!-- Заголовок раздела по файлам обновлений -->
+        <h2>Файлы обновлений</h2>
+    </div>
+
+    {% if quarantine_files %}
+        <div class="message-box message-warning"> <!-- Перечень файлов обновлений, которые будут удалены -->
+            <p>В карантинной зоне находятся следующие файлы обновлений:</p>
+            <ul>
+                {% for file in quarantine_files %} <!-- Отображение списка файлов обновлений -->
+                    <li>{{ file.name }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% else %}
+        <div class="message-box message-info"> <!-- Сообщение об отсутствии файлов обновлений -->
+            Файлы обновлений отсутствуют.
+        </div>
+    {% endif %}
+</section>
+
+<section class="card"> <!-- Карточка с перечнем файлов подписей перед очисткой -->
+    <div class="section-header"> <!-- Заголовок раздела по файлам подписей -->
+        <h2>Файлы подписей</h2>
+    </div>
+
+    {% if quarantine_signatures %}
+        <div class="message-box message-warning"> <!-- Перечень файлов подписей, которые будут удалены -->
+            <p>В карантинной зоне находятся следующие файлы подписей:</p>
+            <ul>
+                {% for file in quarantine_signatures %} <!-- Отображение списка файлов подписей -->
+                    <li>{{ file.name }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% else %}
+        <div class="message-box message-info"> <!-- Сообщение об отсутствии файлов подписей -->
+            Файлы подписей отсутствуют.
+        </div>
+    {% endif %}
+
+    <div class="message-box message-warning"> <!-- Итоговое предупреждение о последствиях очистки -->
+        Подтвердите полную очистку карантинной зоны. Действие приведёт к безвозвратному удалению
+        всех указанных выше файлов.
+    </div>
+
+    <form method="post" class="form-inline-block"> <!-- Форма подтверждения операции очистки -->
+        {% csrf_token %} <!-- Токен защиты от CSRF-атак -->
+        <input type="hidden" name="confirmed" value="yes"> <!-- Служебный признак подтверждения очистки -->
+
+        <div class="action-row"> <!-- Панель действий: подтверждение и отмена -->
+            <button type="submit" class="btn btn-danger">Очистить карантин</button>
+            <a href="{% url 'quarantine' %}" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+</section>
+{% endblock %}
