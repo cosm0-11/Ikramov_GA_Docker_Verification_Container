@@ -1,3 +1,5 @@
 django
 ed25519
 matplotlib
+mysqlclient
+gunicorn

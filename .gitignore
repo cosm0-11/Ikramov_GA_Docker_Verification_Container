@@ -164,3 +164,8 @@ cython_debug/
 # Nix
 /result
 /result-*
+
+# Project specific
+keys/
+data/
+.replit
