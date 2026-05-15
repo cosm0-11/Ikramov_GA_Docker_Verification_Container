@@ -1,83 +1,83 @@
-apiVersion: v1
-kind: Namespace
+apiVersion: v1 # версия Kubernetes API
+kind: Namespace # тип объекта — пространство имён
 metadata:
-  name: verification
+  name: verification # все объекты проекта будут жить в пространстве имен "verification"
 
 ---
 apiVersion: v1
-kind: Secret
+kind: Secret # объект для хранения чувствительных данных
 metadata:
   name: verification-secrets
   namespace: verification
-type: Opaque
+type: Opaque # произвольный набор ключей
 stringData:
-  MYSQL_ROOT_PASSWORD: "rootpass123"
-  MYSQL_PASSWORD: "verifpass123"
-  DJANGO_SECRET_KEY: "django-insecure-demo-key-change-me"
+  MYSQL_ROOT_PASSWORD: "rootpass123" # пароль root-пользователя БД
+  MYSQL_PASSWORD: "verifpass123" # пароль рабочего пользователя БД
+  DJANGO_SECRET_KEY: "django-insecure-demo-key-change-me" # секретный ключ Django
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim # запрос на выделение постоянного хранилища
+metadata:
+  name: db-pvc # том для данных базы данных
+  namespace: verification
+spec:
+  accessModes:
+    - ReadWriteOnce # том монтируется только одним узлом одновременно
+  resources:
+    requests:
+      storage: 5Gi # запрашивается 5 гигабайт под данные MariaDB
 
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: db-pvc
+  name: app-data-pvc # том для медиафайлов приложения
   namespace: verification
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 5Gi
+      storage: 2Gi # запрашивается 2 гигабайта под загруженные файлы
 
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: app-data-pvc
+  name: app-keys-pvc # том для криптографических ключей верификации
   namespace: verification
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 2Gi
+      storage: 1Gi # достаточно 1 гигабайта для ключей
 
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: app-keys-pvc
+  name: static-pvc # том для статических файлов (CSS, JS, изображения)
   namespace: verification
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
-
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: static-pvc
-  namespace: verification
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
+      storage: 1Gi # 1 гигабайт под статику Django
 
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: Deployment # управляемый деплой с поддержкой обновлений и рестартов
 metadata:
   name: verification-db
   namespace: verification
 spec:
-  replicas: 1
+  replicas: 1 # запускается один экземпляр базы данных
   selector:
     matchLabels:
-      app: verification-db
+      app: verification-db # деплой управляет подами с этим лейблом
   template:
     metadata:
       labels:
@@ -85,31 +85,31 @@ spec:
     spec:
       containers:
         - name: mariadb
-          image: mariadb:10.11
+          image: mariadb:10.11 # официальный образ MariaDB версии 10.11
           ports:
-            - containerPort: 3306
+            - containerPort: 3306 # стандартный порт MySQL/MariaDB
           env:
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: verification-secrets
-                  key: MYSQL_ROOT_PASSWORD
+                  key: MYSQL_ROOT_PASSWORD # пароль root берётся из Secret
             - name: MYSQL_DATABASE
-              value: verification_db
+              value: verification_db # имя создаваемой базы данных
             - name: MYSQL_USER
-              value: verif_user
+              value: verif_user # рабочий пользователь БД
             - name: MYSQL_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: verification-secrets
-                  key: MYSQL_PASSWORD
+                  key: MYSQL_PASSWORD # пароль пользователя берётся из Secret
           volumeMounts:
             - name: db-storage
-              mountPath: /var/lib/mysql
+              mountPath: /var/lib/mysql # данные БД монтируются в стандартный путь MariaDB
       volumes:
         - name: db-storage
           persistentVolumeClaim:
-            claimName: db-pvc
+            claimName: db-pvc # используется ранее объявленный PVC
 
 ---
 apiVersion: v1
@@ -122,20 +122,20 @@ spec:
     app: verification-db
   ports:
     - port: 3306
-      targetPort: 3306
-  type: ClusterIP
+      targetPort: 3306 # сервис пробрасывает порт 3306 внутри кластера
+  type: ClusterIP # доступен только внутри кластера, снаружи не виден
 
 ---
 apiVersion: batch/v1
-kind: Job
+kind: Job # одноразовая задача — выполнить миграции БД
 metadata:
   name: verification-migrate
   namespace: verification
 spec:
-  backoffLimit: 5
+  backoffLimit: 5 # повторять попытку до 5 раз при ошибке
   template:
     spec:
-      restartPolicy: OnFailure
+      restartPolicy: OnFailure # перезапускать под только при сбое
       initContainers:
         - name: wait-for-db
           image: busybox
@@ -143,19 +143,19 @@ spec:
             - sh
             - -c
             - |
-              until nc -z verification-db 3306; do
+              until nc -z verification-db 3306; do # ждать пока не откроется порт БД
                 echo "Waiting for MariaDB..."; sleep 3;
               done
       containers:
         - name: migrate
           image: verificationcontainer-web:latest
-          imagePullPolicy: Never
-          command: ["python", "manage.py", "migrate", "--noinput"]
+          imagePullPolicy: Never # использовать локальный образ, не тянуть из registry
+          command: ["python", "manage.py", "migrate", "--noinput"] # выполнить миграции Django
           env:
             - name: DJANGO_SETTINGS_MODULE
               value: django_project.settings
             - name: DB_HOST
-              value: verification-db
+              value: verification-db # хост БД — имя сервиса внутри кластера
             - name: MYSQL_DATABASE
               value: verification_db
             - name: MYSQL_USER
@@ -171,15 +171,15 @@ spec:
                   name: verification-secrets
                   key: DJANGO_SECRET_KEY
             - name: ALLOWED_HOSTS
-              value: "localhost,127.0.0.1,verification-nginx,verification-web,192.168.49.2"
+              value: "localhost,127.0.0.1,verification-nginx,verification-web,192.168.49.2" # разрешённые хосты Django
             - name: CSRF_TRUSTED_ORIGINS
-              value: "https://192.168.49.2:30443,http://192.168.49.2:30080"
+              value: "https://192.168.49.2:30443,http://192.168.49.2:30080" # доверенные источники CSRF
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: verification-web
+  name: verification-web # деплой основного Django-приложения
   namespace: verification
 spec:
   replicas: 1
@@ -192,7 +192,7 @@ spec:
         app: verification-web
     spec:
       initContainers:
-        - name: wait-for-db
+        - name: wait-for-db # ждать готовности БД перед стартом
           image: busybox
           command:
             - sh
@@ -201,7 +201,7 @@ spec:
               until nc -z verification-db 3306; do
                 echo "Waiting for MariaDB..."; sleep 3;
               done
-        - name: collectstatic
+        - name: collectstatic # собрать статику до запуска основного контейнера
           image: verificationcontainer-web:latest
           imagePullPolicy: Never
           command: ["python", "manage.py", "collectstatic", "--noinput"]
@@ -230,13 +230,13 @@ spec:
               value: "https://192.168.49.2:30443,http://192.168.49.2:30080"
           volumeMounts:
             - name: static-storage
-              mountPath: /app/staticfiles
+              mountPath: /app/staticfiles # статика собирается в этот том
       containers:
         - name: web
           image: verificationcontainer-web:latest
           imagePullPolicy: Never
           ports:
-            - containerPort: 8000
+            - containerPort: 8000 # Django слушает на порту 8000
           env:
             - name: DJANGO_SETTINGS_MODULE
               value: django_project.settings
@@ -262,11 +262,11 @@ spec:
               value: "https://192.168.49.2:30443,http://192.168.49.2:30080"
           volumeMounts:
             - name: app-data
-              mountPath: /app/data
+              mountPath: /app/data # медиафайлы приложения
             - name: app-keys
-              mountPath: /app/keys
+              mountPath: /app/keys # криптографические ключи верификации
             - name: static-storage
-              mountPath: /app/staticfiles
+              mountPath: /app/staticfiles # статические файлы
       volumes:
         - name: app-data
           persistentVolumeClaim:
@@ -289,46 +289,46 @@ spec:
     app: verification-web
   ports:
     - port: 8000
-      targetPort: 8000
-  type: ClusterIP
+      targetPort: 8000 # сервис для доступа к Django внутри кластера
+  type: ClusterIP # доступен только внутри кластера (nginx обращается по этому имени)
 
 ---
 apiVersion: v1
-kind: ConfigMap
+kind: ConfigMap # конфигурационный файл nginx в виде объекта Kubernetes
 metadata:
   name: verification-nginx-config
   namespace: verification
 data:
   default.conf: |
     server {
-        listen 80;
-        server_name _;
-        return 301 https://$host:30443$request_uri;
+        listen 80; # nginx слушает HTTP на порту 80
+        server_name _; # принимать запросы на любое имя хоста
+        return 301 https://$host:30443$request_uri; # редирект всего HTTP → HTTPS
     }
 
     server {
-        listen 443 ssl;
+        listen 443 ssl; # nginx слушает HTTPS на порту 443
         server_name _;
 
-        ssl_certificate     /etc/nginx/tls/tls.crt;
-        ssl_certificate_key /etc/nginx/tls/tls.key;
+        ssl_certificate     /etc/nginx/tls/tls.crt; # путь к TLS-сертификату
+        ssl_certificate_key /etc/nginx/tls/tls.key; # путь к приватному ключу
 
-        client_max_body_size 20M;
+        client_max_body_size 20M; # максимальный размер загружаемого файла — 20 МБ
 
         location /static/ {
-            alias /app/staticfiles/;
+            alias /app/staticfiles/; # статические файлы отдаёт nginx напрямую
         }
 
         location /media/ {
-            alias /app/data/;
+            alias /app/data/; # медиафайлы отдаёт nginx напрямую
         }
 
         location / {
-            proxy_pass http://verification-web:8000;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto https;
+            proxy_pass http://verification-web:8000; # все остальные запросы проксируются в Django
+            proxy_set_header Host $host; # передать оригинальный заголовок Host
+            proxy_set_header X-Real-IP $remote_addr; # передать реальный IP клиента
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; # цепочка IP-адресов
+            proxy_set_header X-Forwarded-Proto https; # сообщить Django что соединение было по HTTPS
         }
     }
 
@@ -336,7 +336,7 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: verification-nginx
+  name: verification-nginx # деплой nginx как обратного прокси
   namespace: verification
 spec:
   replicas: 1
@@ -350,25 +350,25 @@ spec:
     spec:
       containers:
         - name: nginx
-          image: nginx:stable-alpine
+          image: nginx:stable-alpine # лёгкий образ nginx на базе Alpine Linux
           ports:
-            - containerPort: 80
-            - containerPort: 443
+            - containerPort: 80 # порт HTTP
+            - containerPort: 443 # порт HTTPS
           volumeMounts:
             - name: nginx-config
               mountPath: /etc/nginx/conf.d/default.conf
-              subPath: default.conf
+              subPath: default.conf # монтируем только файл конфигурации, не всю директорию
             - name: static-storage
-              mountPath: /app/staticfiles
+              mountPath: /app/staticfiles # доступ к статике для раздачи
             - name: app-data
-              mountPath: /app/data
+              mountPath: /app/data # доступ к медиафайлам для раздачи
             - name: tls-certs
-              mountPath: /etc/nginx/tls
+              mountPath: /etc/nginx/tls # TLS-сертификаты монтируются только для чтения
               readOnly: true
       volumes:
         - name: nginx-config
           configMap:
-            name: verification-nginx-config
+            name: verification-nginx-config # конфиг берётся из ConfigMap выше
         - name: static-storage
           persistentVolumeClaim:
             claimName: static-pvc
@@ -377,7 +377,7 @@ spec:
             claimName: app-data-pvc
         - name: tls-certs
           secret:
-            secretName: verification-tls
+            secretName: verification-tls # TLS-сертификат хранится в отдельном Secret
 
 ---
 apiVersion: v1
@@ -392,9 +392,9 @@ spec:
     - name: http
       port: 80
       targetPort: 80
-      nodePort: 30080
+      nodePort: 30080 # порт 30080 на узле кластера - HTTP внутри nginx
     - name: https
       port: 443
       targetPort: 443
-      nodePort: 30443
-  type: NodePort
+      nodePort: 30443 # порт 30443 на узле кластера - HTTPS внутри nginx
+  type: NodePort # сервис доступен снаружи кластера через порты узла
