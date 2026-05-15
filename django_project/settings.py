@@ -2,25 +2,25 @@ import os
 from pathlib import Path
 
 
-BASE_DIR = Path(__file__).resolve().parent.parent # определяем базовую директорию проекта
+BASE_DIR = Path(__file__).resolve().parent.parent
 
-MEDIA_URL = "/media/"  # задаём URL-префикс для доступа к медиафайлам
-MEDIA_ROOT = BASE_DIR / "data"  # указываем корневую директорию для хранения медиафайлов
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "data"
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-4ju2n@$f9d0c=h)_g0lbb%k9&@rf(xa$d$g$&5ri$uf)*gev^4')
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-domains = os.environ.get("REPLIT_DOMAINS")
+_raw_hosts = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+ALLOWED_HOSTS = [h.strip() for h in _raw_hosts]
 
-if domains:
-    ALLOWED_HOSTS = domains.split(',')
-    CSRF_TRUSTED_ORIGINS = [
-        "https://" + domain for domain in domains.split(',')
-    ]
+_csrf_env = os.environ.get('CSRF_TRUSTED_ORIGINS', '')
+if _csrf_env:
+    CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_env.split(',')]
 else:
-    hosts = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost')
-    ALLOWED_HOSTS = hosts.split(',')
+    CSRF_TRUSTED_ORIGINS = (
+        ["http://" + h.strip() for h in _raw_hosts] +
+        ["https://" + h.strip() for h in _raw_hosts]
+    )
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -29,7 +29,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'web_container' # добавляем приложение web_container в список установленных приложений
+    'web_container',
 ]
 
 MIDDLEWARE = [
@@ -39,12 +39,8 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
-# Only use clickjacking protection in deployments because the Development Web View uses
-# iframes and needs to be a cross origin.
-if ("REPLIT_DEPLOYMENT" in os.environ):
-    MIDDLEWARE.append('django.middleware.clickjacking.XFrameOptionsMiddleware')
 
 ROOT_URLCONF = 'django_project.urls'
 
@@ -66,9 +62,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'django_project.wsgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -80,46 +73,19 @@ DATABASES = {
     }
 }
 
-# Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME':
-        'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME':
-        'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME':
-        'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME':
-        'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# Internationalization
-# https://docs.djangoproject.com/en/5.0/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

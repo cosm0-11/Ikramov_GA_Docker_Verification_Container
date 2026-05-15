@@ -169,3 +169,5 @@ cython_debug/
 keys/
 data/
 .replit
+tls.crt
+tls.key
